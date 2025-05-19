@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<h2>Clone Event to Student</h2>
+
+<p>Cloning: <strong>{{ event.title }}</strong> ({{ event.date }})</p>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Clone</button>
+</form>
+
+<a href="{% url 'event_list' %}">Back to Events</a>
+</html>

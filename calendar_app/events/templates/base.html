@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<h1>hello^__^</h1>
+{% if user.is_authenticated %}
+  <p>Welcome, {{ user.username }}! <a href="{% url 'logout' %}">Logout</a></p>
+{% else %}
+  <a href="{% url 'login' %}">Login</a> | <a href="{% url 'signup' %}">Sign Up</a>
+{% endif %}
+<nav>
+    {% if user.is_authenticated %}
+        {% if user.role == 'admin' %}
+        <form method="get">
+            <label>View student:</label>
+            <input name="student" placeholder="username" value="{{ viewing }}">
+            <button type="submit">Go</button>
+        </form>
+        {% endif %}
+        {% if user.role == 'parent' %}
+        <form method="get">
+            <label>View child:</label>
+            <select name="child">
+                <option value="">{{ viewing }}</option>
+                {% for child in request.user.children.all %}
+                <option value="{{ child.username }}">{{ child.username }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Go</button>
+        </form>
+        {% endif %}
+    {% if user.role == 'student' %}
+    <ul>
+        <li><a href="{% url 'dashboard_view' %}">Dashboard</a></li>
+        <li class="dropdown">
+            <a href="#">Launchpads ▼</a>
+            <ul class="dropdown-content">
+                <li><a href="{% url 'calendar_view' %}">Calendar</a></li>
+                <li><a href="{% url 'create_event' %}">New Assessment</a></li>
+                <li><a href="{% url 'event_list' %}">All Assessments</a></li>
+            </ul>
+        </li>
+        <li><a href="{% url 'logout_view' %}">Logout</a></li>
+    </ul>
+    {% endif %}
+</nav>
+</html>

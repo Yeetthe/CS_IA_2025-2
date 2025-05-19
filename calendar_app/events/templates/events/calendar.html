@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calendar</title>
+    <link rel="stylesheet" href="{% static 'calendar.css' %}">
+</head>
+<body>
+    <h1>Calendar for {{ current_month }}/{{ current_year }}</h1>
+    {% if role == 'admin' %}
+    <form method="get" class="role-selector">
+      <label>View student:</label>
+      <input name="student" value="{{ viewing }}" placeholder="username">
+      <button>Go</button>
+    </form>
+  {% elif role == 'parent' %}
+    <form method="get" class="role-selector">
+      <label>View child:</label>
+      <select name="child">
+        <option value="">{{ viewing }}</option>
+        {% for child in user.children.all %}
+          <option value="{{ child.username }}">{{ child.username }}</option>
+        {% endfor %}
+      </select>
+      <button>Go</button>
+    </form>
+  {% endif %}
+    <div style="display: flex;">
+        <!-- 📅 Calendar Grid -->
+        <div style="flex: 3;">
+            <table border="1" style="width: 100%; height: 500px; text-align: center;">
+                <thead>
+                    <tr>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                        <th>Sun</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for week in calendar_weeks %}
+                    <tr>
+                        {% for day in week %}
+                        <td onclick="showEvents('{{ day.date }}')" style="cursor: pointer;">
+                            <strong>{{ day.date.day }}</strong><br>
+                            {% for event in day.events %}
+                                <span>{{ event.title }}</span><br>
+                                <a href="{% url 'shared_event' event.share_token %}" target="_blank">Share</a><br>
+                 {% if event.file %}
+                     <a href="{{ event.file.url }}">Download File</a>
+                    {% endif %}                     
+                                {% if user.role == 'admin' %}
+                                <a href="{% url 'admin_clone_event' event.id %}" class="btn btn-sm btn-outline-primary">Clone</a>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div style="flex: 1; padding: 1rem; border-left: 1px solid #ccc;" id="eventSidebar">
+            <h2>Event Details</h2>
+            <div id="eventDetails">
+                <p>Click on a date to see event info.</p>
+            </div>
+        </div>
+        <a href="{% url 'event_list' %}">event list</a>
+    </div>
+    <script>
+        const eventsData = {
+            {% for week in calendar_weeks %}
+                {% for day in week %}
+                    "{{ day.date }}": [
+                        {% for event in day.events %}
+                        {
+                            "title": "{{ event.title|escapejs }}",
+                            "description": "{{ event.get_description|escapejs }}",
+                            "date": "{{ event.date }}"
+                        },
+                        {% endfor %}
+                    ],
+                {% endfor %}
+            {% endfor %}
+        };
+
+        function showEvents(dateStr) {
+            const events = eventsData[dateStr];
+            const detailsDiv = document.getElementById("eventDetails");
+
+            if (!events || events.length === 0) {
+                detailsDiv.innerHTML = "<p>No events on this date.</p>";
+                return;
+            }
+
+            let html = "";
+            events.forEach(event => {
+                html += `<div>
+                    <h3>${event.title}</h3>
+                    <p><strong>Date:</strong> ${event.date}</p>
+                    <p>${event.description}</p>
+                </div><hr>`;
+            });
+
+            detailsDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
+

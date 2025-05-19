@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CGS Portal</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f7fb;
+      color: #333;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 220px;
+      background-color: #1f3f72;
+      color: white;
+      padding: 1rem;
+    }
+
+    .sidebar h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar ul li {
+      margin: 0.8rem 0;
+    }
+
+    .sidebar ul li a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 0.3rem 0.5rem;
+      border-radius: 4px;
+    }
+    .sidebar ul li a:hover {
+      background-color: #2e5aa4;
+    }
+    .main {
+      margin-left: 240px;
+      padding: 2rem;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topbar h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .card {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .card:hover {
+        background-color: #e8efff;
+    }
+
+    .calendar-preview {
+        margin-top: 2rem;
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .calendar-preview h2 {
+        margin-top: 0;
+    }
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: white;
+        min-width: 160px;
+        border: 1px solid #ccc;
+        z-index: 1;
+    }
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+    .dropdown-content a {
+        color: #333;
+        padding: 10px;
+        display: block;
+        text-decoration: none;
+    }
+    </style>
+    </head>
+<body>
+  <div class="sidebar">
+    <h2>CGS Connect</h2>
+    <ul>
+      <li><a href="#">Dashboard</a></li>
+      <li><a href="#">My Calendar</a></li>
+      <li><a href="#">My Subjects</a></li>
+      <li><a href="#">Assessments</a></li>
+      <li><a href="#">Forms & Links</a></li>
+      <li><a href="#">Wellbeing</a></li>
+          <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-danger">Logout</button>
+          </form>
+      </li>
+    </ul>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1>Welcome, Student</h1>
+      <p><a href="#">🔔 Notifications</a></p>
+    </div>
+
+        <div class="card-grid">
+            <div class="card">📅 Calendar</div>
+            <div class="card">📝 Assessments</div>
+            <div class="card">📚 Resources</div>
+            <div class="card">📨 Webmail</div>
+            <div class="card">👨‍🏫 Staff Directory</div>
+            <div class="card">🚨 Report Concern</div>
+        </div>
+
+        <div class="calendar-preview">
+            <h2>Upcoming Assessments</h2>
+            <ul>
+                {% for a in upcoming_events %}
+                <li>
+                    <strong>{{ event.title }}</strong> — {{ event.date }}<br>
+                    {{ event.description|truncatechars:100 }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+    Launchpads
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <li><a class="dropdown-item" href="{% url 'calendar' %}">Calendar</a></li>
+    <li><a class="dropdown-item" href="{% url 'create_event' %}">Create Event</a></li>
+    <li><a class="dropdown-item" href="{% url 'event_list' %}">All Events</a></li>
+  </ul>
+</div>
+    </div>
+</body>

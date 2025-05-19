@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<h1>{{ event.title }}</h1>
+<p><strong>Date:</strong> {{ event.date }}</p>
+<p>{{ event.get_description }}</p>
+{% if user.is_authenticated %}
+  <form method="post" action="{% url 'shared_event' event.share_token %}">
+    {% csrf_token %}
+    <button type="submit">Save to My Calendar</button>
+  </form>
+{% else %}
+  <p><a href="{% url 'login' %}?next={{ request.path }}">Log in</a> to save this event.</p>
+{% endif %}
+</html>

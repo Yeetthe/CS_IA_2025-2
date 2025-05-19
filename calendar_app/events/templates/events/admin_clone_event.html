@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<h2>Clone Event: {{ original_event.title }}</h2>
+<p>Date: {{ original_event.date }}</p>
+<p>Description: {{ original_event.description }}</p>
+
+<form method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Clone to Student</button>
+  <a href="{% url 'event_list' %}">Cancel</a>
+</form>
+
+{% if messages %}
+  <ul>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+</html>
